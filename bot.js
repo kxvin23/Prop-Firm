@@ -58,7 +58,7 @@ function buildDealsEmbed(dealsText) {
       ].join("\n")
     )
     .setFooter({
-      text: "Use code KEV at checkout to save + support more giveaways",
+      text: "Your support is genuinely appreciated — use code KEV at checkout to save",
     })
     .setTimestamp();
 }
