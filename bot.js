@@ -20,7 +20,6 @@ const client = new Client({
 });
 
 // ─── Fetch Latest Deals From Your Source Channel ───────────────────────────
-// Just post your updated deals in SOURCE_CHANNEL — bot will read the latest message
 async function getDealsFromSourceChannel() {
   const sourceChannelId = process.env.SOURCE_CHANNEL_ID;
   if (!sourceChannelId) return console.error("❌ SOURCE_CHANNEL_ID not set in .env"), null;
@@ -59,7 +58,7 @@ function buildDealsEmbed(dealsText) {
       ].join("\n")
     )
     .setFooter({
-      text: "Deals valid this week only • Affiliate links support the community ❤️",
+      text: "Use code KEV at checkout to save • Giveaways & exclusive offers available to community members",
     })
     .setTimestamp();
 }
@@ -76,6 +75,13 @@ async function postWeeklyDeals() {
 
   const dealsText = await getDealsFromSourceChannel();
   if (!dealsText) return console.error("❌ No deals content — skipping post");
+
+  // Delete the last bot message if there is one
+  const messages = await postChannel.messages.fetch({ limit: 20 });
+  const lastBotMessage = messages.find((m) => m.author.id === client.user.id);
+  if (lastBotMessage) {
+    await lastBotMessage.delete().catch(() => console.log("⚠️ Could not delete previous message"));
+  }
 
   const embed = buildDealsEmbed(dealsText);
   await postChannel.send({ embeds: [embed] });
@@ -105,7 +111,7 @@ async function registerCommands() {
 }
 
 // ─── Bot Events ─────────────────────────────────────────────────────────────
-client.once("ready", async () => {
+client.once("clientReady", async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
   await registerCommands();
 
@@ -118,7 +124,7 @@ client.once("ready", async () => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   if (interaction.commandName === "postdeals") {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     await postWeeklyDeals();
     await interaction.editReply("✅ Weekly deals posted!");
   }
