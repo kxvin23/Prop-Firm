@@ -1,0 +1,14 @@
+{
+  "name": "prop-deals-bot",
+  "version": "1.0.0",
+  "description": "Weekly prop firm affiliate deals Discord bot with code KEV",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "node-cron": "^3.0.3",
+    "dotenv": "^16.4.5"
+  }
+}
